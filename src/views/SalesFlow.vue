@@ -5,7 +5,9 @@
 
     <div class="step-navigation">
       <button
-        @click="currentStep--"
+        @click="
+          customer == 0 && currentStep === 5 ? (currentStep = 3) : currentStep--
+        "
         :disabled="currentStep <= 1"
         class="nav-btn"
       >
@@ -13,7 +15,9 @@
       </button>
       <h3>ขั้นตอนที่ {{ currentStep }}: {{ stepTitles[currentStep - 1] }}</h3>
       <button
-        @click="currentStep++"
+        @click="
+          customer == 0 && currentStep === 3 ? (currentStep = 5) : currentStep++
+        "
         :disabled="currentStep >= 5"
         class="nav-btn"
       >
@@ -107,31 +111,51 @@
         <!-- STEP 5 -->
         <div v-show="currentStep === 5" class="step-container">
           <strong>Handover (ส่งมอบ Server)</strong> <br />
-          <p>
-            <input
-              type="text"
-              placeholder="URL Server"
-              v-model="serverURL"
-            />.dnd-for.us
-          </p>
-          <p class="toCopy">Server Foundry VTT ของคุณพร้อมใช้งานแล้ว</p>
-          <p class="toCopy">เปิดใช้งานได้แล้วที่:</p>
-          <p class="toCopy">🔗 URL: {{ serverURL }}.dnd-for.us</p>
-          <p class="toCopy">
-            🔑 รหัสผ่าน Admin: สามารถตั้งได้เองเมื่อเข้าใช้งานครั้งแรก
-            อย่าลืมตั้งรหัสผ่านเพื่อความปลอดภัย
-          </p>
-          <p class="toCopy">
-            💻 คุณสามารถสมัครสมาชิกที่เว็บ dnd-for.us เพื่อควบคุมเซิร์ฟเวอร์
-            (เปิด/ปิด/รีสตาร์ท) ผ่าน Dashboard ได้ด้วยตัวเอง
-          </p>
-          <p class="toCopy">
-            ขอบคุณที่ใช้บริการเช่า Server กับเรา ขอให้เป็น Campaign
-            ที่ยอดเยี่ยม!
-          </p>
-          <p @click="copyText" class="btn">
-            คัดลอก<i class="fa-duotone fa-solid fa-copy"></i>
-          </p>
+          <div v-if="customer > 0">
+            <p>
+              <input
+                type="text"
+                placeholder="URL Server"
+                v-model="serverURL"
+              />.dnd-for.us
+            </p>
+            <p class="toCopy">Server Foundry VTT ของคุณพร้อมใช้งานแล้ว</p>
+            <p class="toCopy">เปิดใช้งานได้แล้วที่:</p>
+            <p class="toCopy">🔗 URL: {{ serverURL }}.dnd-for.us</p>
+            <p class="toCopy">
+              🔑 รหัสผ่าน Admin: สามารถตั้งได้เองเมื่อเข้าใช้งานครั้งแรก
+              อย่าลืมตั้งรหัสผ่านเพื่อความปลอดภัย
+            </p>
+            <p class="toCopy">
+              💻 คุณสามารถสมัครสมาชิกที่เว็บ dnd-for.us เพื่อควบคุมเซิร์ฟเวอร์
+              (เปิด/ปิด/รีสตาร์ท) ผ่าน Dashboard ได้ด้วยตัวเอง
+            </p>
+            <p class="toCopy">
+              ขอบคุณที่ใช้บริการเช่า Server กับเรา ขอให้เป็น Campaign
+              ที่ยอดเยี่ยม!
+            </p>
+            <p class="toCopy">
+              สิทธิ์ใช้งานจะสิ้นสุดวันที่
+              {{ dayjs().add(1, "month").format("DD/MM/YYYY") }}
+              เมื่อใกล้ถึงเวลาจะมีข้อความส่งไปเตือนอีกทีครับ
+              มีคำถามเพิ่มเติมแจ้งได้เลยนะครับ 😊
+            </p>
+            <p @click="copyText" class="btn">
+              คัดลอก<i class="fa-duotone fa-solid fa-copy"></i>
+            </p>
+          </div>
+          <div v-else>
+            <p class="toCopy">ได้รับยอดเงินเรียบร้อยครับ</p>
+            <p class="toCopy">ขอบคุณที่ต่ออายุบริการ D&D: For Us ครับ 🐉</p>
+            <p class="toCopy">
+              สิทธิ์ใช้งานรอบใหม่จะสิ้นสุดวันที่
+              {{ dayjs().add(1, "month").format("DD/MM/YYYY") }}
+              ขอบคุณที่สนับสนุนเราเสมอมา มีคำถามเพิ่มเติมแจ้งได้เลยนะครับ 😊
+            </p>
+            <p @click="copyText" class="btn">
+              คัดลอก<i class="fa-duotone fa-solid fa-copy"></i>
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -143,6 +167,7 @@ import { watchEffect, ref, computed } from "vue";
 import mergeImages from "merge-images";
 import generatePayload from "promptpay-qr";
 import QRCode from "qrcode";
+import dayjs from "dayjs";
 
 const currentStep = ref(1);
 const stepTitles = ref([
