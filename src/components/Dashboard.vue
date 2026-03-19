@@ -146,6 +146,33 @@
       </ul>
     </div>
     <div class="breakdown">
+      <h3>Next Collect</h3>
+      <ul>
+        <li v-for="sale in nextCollectSales" :key="sale.Id">
+          <div>
+            <span
+              >{{ sale.facebook_name }} -
+              {{ sale["Title (from Products)"][0] }}</span
+            >
+            <span class="product-title">
+              {{ dayjs(sale["Next Collect"]).add(1, "day").fromNow() }}
+            </span>
+          </div>
+          <div class="btns">
+            <a
+              :href="'https://m.me/' + sale.facebook_id"
+              target="_blank"
+              class="btn facebook"
+              >Message <i class="fa-brands fa-facebook-messenger"></i
+            ></a>
+            <a class="btn">
+              ต่ออายุ <i class="fa-duotone fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="breakdown">
       <h3>Recent Churns</h3>
       <ul>
         <li v-for="sale in recentChurns" :key="sale.Id">
@@ -187,6 +214,21 @@ const newSubscribers = computed(() => {
       return dateB - dateA;
     })
     .slice(0, 5);
+});
+
+const nextCollectSales = computed(() => {
+  return sales.value
+    .filter(
+      (sale) =>
+        sale.isActive &&
+        dayjs(sale["Next Collect"]).add(1, "day").isAfter(dayjs()) &&
+        dayjs(sale["Next Collect"]).add(1, "day").diff(dayjs(), "days") <= 7,
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a["Next Collect"]);
+      const dateB = new Date(b["Next Collect"]);
+      return dateA - dateB;
+    });
 });
 
 const getRegisterDate = (sale) => {
@@ -402,11 +444,50 @@ onBeforeMount(() => {
 .breakdown li {
   display: flex;
   justify-content: space-between;
-  padding: 0.5em 0;
+  padding: 0.5em;
+  border-radius: 0.5em;
+}
+
+.breakdown li:nth-child(even) {
+  background-color: #303030;
+}
+
+.breakdown li > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .product-title {
   font-style: italic;
   color: #aaa;
+}
+
+.btn {
+  background-color: #db292f;
+  width: fit-content;
+  padding: 0.25em 0.5em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
+  align-self: center;
+}
+
+.btns {
+  gap: 0.5em;
+}
+
+.btns .btn {
+  width: 100%;
+  text-align: right;
+}
+
+.btn i {
+  margin-left: 0.25em;
+}
+
+.facebook {
+  background: #0866ff;
 }
 </style>
