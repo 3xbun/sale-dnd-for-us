@@ -72,13 +72,18 @@
               ผู้ใช้เก่า
             </p>
           </div>
+
+          <strong>Custom Price (กำหนดราคาเอง) </strong>
+          <input type="number" v-model="customPrice" />
         </div>
 
         <!-- STEP 3 -->
         <div v-show="currentStep === 3" class="step-container payment">
           <strong>Payment (ชำระเงิน)</strong>
           <p>
-            จำนวนเงินที่ต้องชำระ: <strong>{{ customer + price }}</strong> บาท
+            จำนวนเงินที่ต้องชำระ:
+            {{ totalPrice }}
+            บาท
           </p>
           <img src="/imgs/qr-code.png" class="background" />
         </div>
@@ -196,6 +201,8 @@ const selectTier = (selectedTier) => {
 
 const customer = ref(50);
 const serverURL = ref();
+const totalPrice = ref(0);
+const customPrice = ref(0);
 
 const copyText = (event) => {
   const parent = event.currentTarget.parentElement;
@@ -208,7 +215,7 @@ const copyText = (event) => {
 
 const generateQRCode = async () => {
   const payload = generatePayload("1103702535150", {
-    amount: customer.value + price.value,
+    amount: totalPrice.value,
   });
   const qrBase64 = await QRCode.toDataURL(payload, {
     margin: 2,
@@ -235,6 +242,14 @@ const generateQRCode = async () => {
 watchEffect(() => {
   // Re-generate QR code when selections change
   if (price.value !== undefined) {
+    if (customPrice.value == 0) {
+      totalPrice.value = price.value + customer.value;
+    } else {
+      totalPrice.value = customPrice.value;
+    }
+    console.log(price.value + customer.value);
+    console.log(totalPrice.value);
+    console.log(customPrice.value);
     generateQRCode();
   }
 });
