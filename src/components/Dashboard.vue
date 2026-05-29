@@ -165,7 +165,7 @@
               class="btn facebook"
               >Message <i class="fa-brands fa-facebook-messenger"></i
             ></a>
-            <a class="btn">
+            <a class="btn" @click="addOneMonth(sale)">
               ต่ออายุ <i class="fa-duotone fa-solid fa-arrow-right"></i>
             </a>
           </div>
@@ -235,6 +235,34 @@ const getRegisterDate = (sale) => {
   return dayjs(sale["Next Collect"]).subtract(sale.monthSubbed, "month");
 };
 
+const addOneMonth = (sale) => {
+  console.log(sale);
+  const payload = {
+    id: sale.Id,
+    fields: {
+      "Next Collect": dayjs(sale["Next Collect"])
+        .add(1, "month")
+        .format("YYYY-MM-DD"),
+      monthSubbed: sale.monthSubbed + 1,
+    },
+  };
+
+  console.log(payload);
+
+  axios
+    .patch(
+      "https://ndb.3xbun.com/api/v3/data/p0w0egc69gysun8/mhx7o45kfyq1aqz/records",
+      payload,
+      {
+        headers: {
+          "xc-token": import.meta.env.VITE_NDB_API,
+        },
+      },
+    )
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
+};
+
 const recentChurns = computed(() => {
   return sales.value
     .filter((sale) => !sale.isActive && sale.facebook_name)
@@ -264,12 +292,12 @@ const stats = computed(() => {
 
   const activeSales = sales.value.filter((sale) => sale.isActive);
   const prevSales = sales.value.filter((sale) => {
-    if (sale.monthSubbed > 1) {
-      console.log(sale.server_name);
-      console.log(
-        dayjs().diff(dayjs(sale["Next Collect"]).subtract(1, "month"), "days"),
-      );
-    }
+    // if (sale.monthSubbed > 1) {
+    //   console.log(sale.server_name);
+    //   console.log(
+    //     dayjs().diff(dayjs(sale["Next Collect"]).subtract(1, "month"), "days"),
+    //   );
+    // }
   });
   const churnedSales = sales.value.filter(
     (sale) => sale.Products && !sale.isActive,
