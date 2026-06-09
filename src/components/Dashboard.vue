@@ -290,7 +290,10 @@ const stats = computed(() => {
     }, 0);
   };
 
-  const activeSales = sales.value.filter((sale) => sale.isActive);
+  const activeSales = sales.value.filter((sale) => {
+    console.log(sale.server_name + " = " + sale.isActive);
+    return sale.isActive;
+  });
   const prevSales = sales.value.filter((sale) => {
     // if (sale.monthSubbed > 1) {
     //   console.log(sale.server_name);
@@ -376,13 +379,18 @@ onBeforeMount(() => {
   const salesRequest = axios.request({
     ...options,
     url: "https://ndb.3xbun.com/api/v2/tables/mhx7o45kfyq1aqz/records",
-    params: { offset: "0", limit: "-1", where: "", viewId: "vw10kc2ltwqc5grk" },
+    params: {
+      offset: "0",
+      limit: "99",
+      where: "",
+      viewId: "vw10kc2ltwqc5grk",
+    },
   });
 
   const productsRequest = axios.request({
     ...options,
     url: "https://ndb.3xbun.com/api/v2/tables/mewoz8qeuqb30bb/records",
-    params: { offset: "0", limit: "-1", where: "", viewId: "vwoh8kczrkuwotwk" },
+    params: { offset: "0", limit: "99", where: "", viewId: "vwoh8kczrkuwotwk" },
   });
 
   Promise.all([salesRequest, productsRequest])

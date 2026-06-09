@@ -32,6 +32,10 @@ input {
   padding-bottom: 3em;
 }
 
+a {
+  color: inherit;
+}
+
 img {
   width: 100%;
   border-radius: 0.5em;
